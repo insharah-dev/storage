@@ -20,8 +20,7 @@ const fileEx = profile_pic.name.split('.')[1]
 console.log(fileEx);
 
 
-  const {data:{user} ,error}= await client.auth.getUser();
-  console.log(user.id);
+
   
 
   if (email && password) {
@@ -31,17 +30,20 @@ console.log(fileEx);
         password: password,
       });
       console.log(userauth);
-      // if (data) {
-      //   Swal.fire({
-      //     title: "Account created successfully! Redirecting to post page...",
-      //     icon: "success",
-      //     draggable: true,
-      //   });
-      // }
-      // setInterval(() => {
-      //   window.location.href = "post.html";
-      // }, 2000);
+      if (userauth) {
+        Swal.fire({
+          title: "Account created successfully! Redirecting to post page...",
+          icon: "success",
+          draggable: true,
+        });
+      }
+      setInterval(() => {
+        // window.location.href = "post.html";
+      }, 2000);
 
+      const {data:{user} ,error:authError}= await client.auth.getUser();
+      console.log(user.id);
+console.log(authError);
       if (userauth) {
 
         const { data:profileURl, error } = await client.storage.from('users-profiles').upload(`avatars/user-${user.id}.${fileEx}`, profile_pic ,{
@@ -66,11 +68,12 @@ const { data } = client
 
   // other information in database
 
-  const { error } = await client
+  const { data:supData,error } = await client
   .from('storage')
   .insert({ user_id: user.id, email: email, full_name: full_name, profile_url: profile_pic})
+  .select();
   
-  
+  console.log(supData);
   console.log("database error..........",error);
   
         }
@@ -79,42 +82,42 @@ const { data } = client
     catch (error) {
       console.log(error);
       
-  //       console.log("signup error:", error);
-  // console.log("type:", typeof error);
-  // console.log("error.message:", error.message);
-  //     if (error.message.includes("invalid format")) {
-  //       Swal.fire({
-  //         icon: "error",
-  //         title: "Oops...",
-  //         text: "please enter a valid email address!",
-  //       });
-  //     }
-  //     if (
-  //       error.message.includes("Password should be at least 6 characters.")
-  //     ) {
-  //       Swal.fire({
-  //         icon: "warning",
-  //         title: "Oops...",
-  //         text: "make sure your password lenght is 6 or greater than 6 characters!",
-  //       });
-  //     }
-  //     if (error.message.includes("User already registered")) {
-  //       Swal.fire({
-  //         icon: "warning",
-  //         title: "Oops...",
-  //         text: "This User is already registered. Try logging in instead.",
-  //       });
-  //     }
-  //   }
+        console.log("signup error:", error);
+  console.log("type:", typeof error);
+  console.log("error.message:", error.message);
+      if (error.message.includes("invalid format")) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "please enter a valid email address!",
+        });
+      }
+      if (
+        error.message.includes("Password should be at least 6 characters.")
+      ) {
+        Swal.fire({
+          icon: "warning",
+          title: "Oops...",
+          text: "make sure your password lenght is 6 or greater than 6 characters!",
+        });
+      }
+      if (error.message.includes("User already registered")) {
+        Swal.fire({
+          icon: "warning",
+          title: "Oops...",
+          text: "This User is already registered. Try logging in instead.",
+        });
+      }
+    }
 
 
-  // }
+  }
 
-  // else {
-  //   if (email) {
-  //     Swal.fire("please fill the Passsword field.");
-  //   } else {
-  //     Swal.fire("please fill the Email field.");
+  else {
+    if (email) {
+      Swal.fire("please fill the Passsword field.");
+    } else {
+      Swal.fire("please fill the Email field.");
     }
   }
 });
